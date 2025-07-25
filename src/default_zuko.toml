@@ -1,0 +1,19 @@
+# User's preferred programming language
+preferred_lang = "rust"
+
+# List of available programming languages
+language_list = [
+    "rust",
+    "python",
+    "javascript",
+    "java",
+    "c++",
+    "ruby",
+    "go",
+]
+
+# Default editor command
+editor_cmd = "zed"
+
+# Difficulty level: can be "easy", "medium", "hard", or "all"
+difficulty = "easy"
