@@ -14,10 +14,13 @@ pub enum DifficultyFilter {
     All,
 }
 
+ // ---- implementations for DifficultyFilter ----
 
-
-// ----
-
+impl DifficultyFilter {
+    pub fn default() -> Self {
+        DifficultyFilter::All
+    }
+}
 
 impl std::str::FromStr for DifficultyFilter {
     type Err = String;

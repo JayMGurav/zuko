@@ -1,8 +1,5 @@
-# User's preferred programming language
-preferred_lang = "rust"
-
-# List of available programming languages
-language_list = [
+# List of programming languages the user prefers to work with
+preferred_language_list = [
     "rust",
     "python",
     "javascript",

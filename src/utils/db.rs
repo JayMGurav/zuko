@@ -17,7 +17,7 @@ pub fn get_zuko_cli_db_path() -> PathBuf {
 }
 
 
-pub fn get_zuko_user_db_path(base_path: &Path) -> PathBuf {
+pub fn get_zuko_user_db_path(base_path: &PathBuf) -> PathBuf {
     // Construct the path to the Zuko user database file
     base_path.join("zuko_user.db")
 }

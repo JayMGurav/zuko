@@ -1,32 +1,60 @@
-use libsql_client::{Client, Config};
+use std::path::PathBuf;
 use tokio::sync::OnceCell;
-
-use utils::db::{get_zuko_cli_db_path, get_zuko_user_db_path};
+use libsql::Connection;
+use libsql::{Builder};
 
 pub struct DbManager {
-    pub cli_client: Client,
-    pub user_client: Client,
+    pub cli_client: Connection,
+    pub user_client: Connection,
 }
 
-impl DbManager {
-    pub async fn new() -> Self {
-        let cli_client = Client::from_config(Config {
-            url: get_zuko_cli_db_path().to_string_lossy().into(),
-            auth_token: None,
-        })
-        .await
-        .expect("Failed to connect to zuko-cli.db");
+static DB_MANAGER: OnceCell<DbManager> = OnceCell::const_new();
 
-        let user_client = Client::from_config(Config {
-            url: get_zuko_user_db_path().to_string_lossy().into(),
-            auth_token: None,
-        })
-        .await
-        .expect("Failed to connect to zuko-user.db");
+impl DbManager {
+    pub async fn new(cli_db_path: PathBuf, user_db_path: PathBuf) -> Self {
+        if !cli_db_path.exists() {
+            panic!("CLI database does not exist: {}", cli_db_path.display());
+        }
+
+        if !user_db_path.exists() {
+            panic!("User database  does not exist: {}", user_db_path.display());
+        }
+
+
+        let cli_db = Builder::new_remote_replica(
+            format!("file://{}", cli_db_path.display()).to_string(),
+            "libsql://...".to_string(),
+            "...".to_string()
+        )
+        .build()
+        .await.expect("Failed to build connection to zuko-cli.db");
+    
+        let user_db = Builder::new_local(
+            format!("file://{}", user_db_path.display())
+        )
+            .build()
+            .await
+            .expect("Failed to build connection to local user.db");
+
+        let cli_client = cli_db.connect().expect("Failed to connect to zuko-cli.db");
+
+        let user_db_conn = user_db.connect().expect("Failed to connect to local user.db");
 
         Self {
-            cli_client,
-            user_client,
+            cli_client: cli_client,
+            user_client: user_db_conn,
         }
+    }
+
+    pub async fn init(cli_db_path: PathBuf, user_db_path: PathBuf) -> &'static DbManager {
+        DB_MANAGER
+            .get_or_init(|| async {
+                DbManager::new(cli_db_path, user_db_path).await
+            })
+            .await
+    }
+
+    pub fn get() -> &'static DbManager {
+        DB_MANAGER.get().expect("DbManager not initialized")
     }
 }
