@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use clap::ValueEnum;
+use std::fmt;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, ValueEnum)]
 pub enum Difficulty {
@@ -14,7 +15,27 @@ pub enum DifficultyFilter {
     All,
 }
 
- // ---- implementations for DifficultyFilter ----
+ // ---- implementations ----
+
+impl fmt::Display for Difficulty {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let label = match self {
+            Difficulty::Easy => "Easy 🟢",
+            Difficulty::Medium => "Medium 🟡",
+            Difficulty::Hard => "Hard 🔴",
+        };
+        write!(f, "{}", label)
+    }
+}
+
+impl fmt::Display for DifficultyFilter {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            DifficultyFilter::All => write!(f, "All Difficulties 🌈"),
+            DifficultyFilter::Specific(d) => write!(f, "{d}"), // `d` already implements Display
+        }
+    }
+}
 
 impl DifficultyFilter {
     pub fn default() -> Self {

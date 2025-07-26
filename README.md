@@ -45,3 +45,12 @@ Zuko embodies discipline, resilience, and growth. The tool nudges you to show up
 - community support for sourcing problems
 
 <!-- That's rough buddy. for failed tests -->
+<!-- 
+
+
+
+todo
+
+1. remove default config toml, keep it in-memory code level defaults
+2. on start of the program create a .zuko/config.toml and zuko_db at .zuko/db/local.db
+2. zuko init??  -->
