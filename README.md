@@ -44,9 +44,15 @@ Zuko embodies discipline, resilience, and growth. The tool nudges you to show up
 - ☁️ VCS tracking for maintaing streak
 - community support for sourcing problems
 
+
+
+### Questions 
+
+- can we use a CSV file for problem set data.
+    - https://stackoverflow.com/questions/76953964/run-sql-query-on-csv-file-contents-from-command-line
+
 <!-- That's rough buddy. for failed tests -->
 <!-- 
-
 
 
 todo
@@ -54,3 +60,25 @@ todo
 1. remove default config toml, keep it in-memory code level defaults
 2. on start of the program create a .zuko/config.toml and zuko_db at .zuko/db/local.db
 2. zuko init??  -->
+
+<!-- 
+fn main() {
+    let questions = vec![
+        Question {
+            title: "Two Sum".into(),
+            title_slug: "two-sum".into(),
+            content: "...".into(),
+        },
+        Question {
+            title: "Add Two Numbers".into(),
+            title_slug: "add-two-numbers".into(),
+            content: "...".into(),
+        },
+    ];
+
+    let results = search_questions(&questions, "add");
+
+    for q in results {
+        println!("Matched: {}", q.title);
+    }
+} -->

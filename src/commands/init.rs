@@ -1,8 +1,8 @@
 use crate::config::zuko_context::ZukoContext;
 use inquire::{Text, Select, Confirm, MultiSelect};
 use crate::types::{DifficultyFilter, Difficulty};
-use crate::db::ZUKO_USER_DB;
-use libsql::Builder;    
+// use crate::db::{get_zuko_user_db, zuko_user::connect_to_zuko_user_db};
+// use libsql::Builder;    
 
 
 pub async fn execute(context: &mut ZukoContext) {
@@ -62,25 +62,13 @@ pub async fn execute(context: &mut ZukoContext) {
     context.save_to_file().expect("Failed to save config to file");
 
 
-    if track_progress {
-        // Create user database
-        let zuko_user_db = Builder::new_local(
-            format!("file://{}", context.project_root.join("/db/zuko_user.db").display()).to_string(),
-        )
-        .build()
-        .await
-        .expect("Failed to build connection to zuko_user.db");
+    // if track_progress {
+        // TODO
+        // connect_to_zuko_user_db(
+        //     format!("file://{}", context.project_root.join("/db/zuko_user.db").display())
+        // ).await.expect("Failed to connect to zuko_user.db");
 
-        let zuko_user_db_connection = zuko_user_db.connect().expect("Failed to connect to zuko_user.db");
-
-
-        // get or initialize the ZUKO_USER_DB
-        ZUKO_USER_DB
-            .set(zuko_user_db_connection)
-            .expect("ZUKO_USER_DB already initialized!");
-
-        // create the user table if it doesn't exist
-    } 
+    // } 
 
     // sync the zuko database
     crate::db::sync_zuko_db().await;

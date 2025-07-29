@@ -3,10 +3,12 @@ mod config;
 mod db;
 mod types;
 mod utils;
+mod ui;
 
 use clap::{Parser, Subcommand};
 use db::{ZUKO_DB, ZUKO_DATABASE};
 use libsql::Builder;
+use config::db::{TURSO_DB_URL, TURSO_DB_TOKEN};
 
 use crate::config::zuko_context::{ZukoContext};
 
@@ -48,11 +50,14 @@ async fn main() {
 
     let mut context = ZukoContext::load_or_default();
 
+    // print context value to console
+    println!("Zuko Context: {:?}", context);
+
     // initialize zuko db
     let zuko_db = Builder::new_remote_replica(
-        format!("file://{}", context.cli_dir.join("/db/zuko.db").display()).to_string(),
-        "libsql://...".to_string(), //remote DB connection string
-        "...".to_string(),          //remote DB encryption string
+        format!("{}", context.cli_dir.join("db/zuko.db").display()).to_string(),
+        TURSO_DB_URL.to_string(), //remote DB connection string
+        TURSO_DB_TOKEN.to_string(), //remote DB encryption string
     )
     .build()
     .await
@@ -72,8 +77,6 @@ async fn main() {
         Commands::Init => {
             // Handle the init command
             commands::init::execute(&mut context).await;
-
-            println!("My Config: {:?}", context);
         }
         Commands::List {
             topic,

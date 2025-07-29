@@ -1,0 +1,2 @@
+pub const TURSO_DB_URL: &str = "libsql://zuko-jaymgurav.aws-ap-south-1.turso.io";
+pub const TURSO_DB_TOKEN: &str = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicm8iLCJpYXQiOjE3NTM1NDQ1MzcsImlkIjoiZGE1M2UzZWQtOTY3NS00ZGJhLTlmNDUtNTM0ZDUyNjkzYzgwIiwicmlkIjoiMTE0ZjA5YmItYWRhNC00NjU3LTgyNTEtMGJkMWRkODU5MTgwIn0.JtMWdQzXdEf5b_fYpebUA0ZzLK_tfUQ31NnDRS0xct9FPUHn-P78eLBof8RglZlWcuoR3ZVzc7IfXwJeBSxhDQ";
