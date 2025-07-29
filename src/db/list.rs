@@ -12,7 +12,7 @@ pub async fn get_all_questions(
 
     // let mut query = "SELECT title,title_slug,topic,difficulty,content,hints,example_testcase_list,next_challenges FROM QuestionList".to_string();
 
-    let mut query = "SELECT title,title_slug,difficulty,content FROM QuestionList".to_string();
+    let mut query = "SELECT title,title_slug,content FROM QuestionList".to_string();
 
     let mut conditions = vec![];
 
@@ -37,7 +37,7 @@ pub async fn get_all_questions(
         loop {
             match rows.next().await? {
                 Some(row) => {
-                    println!("Row values: {:?}", row);
+                    // println!("Row values: {:?}", row);
                     let question = Question::from_row(row)?;
                     questions.push(question);
                 }

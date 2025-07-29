@@ -51,7 +51,7 @@ async fn main() {
     let mut context = ZukoContext::load_or_default();
 
     // print context value to console
-    println!("Zuko Context: {:?}", context);
+    // { project_root: "", project_name: "", cli_dir: "/Users/jaygurav/.zuko", preferred_language_list: ["java", "python", "rust", "javascript", "c++", "ruby", "go"], editor_cmd: "code", difficulty: All, init_git: true, track_progress: false, username: "" }
 
     // initialize zuko db
     let zuko_db = Builder::new_remote_replica(

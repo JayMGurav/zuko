@@ -2,8 +2,8 @@ use ratatui::{
     backend::CrosstermBackend,
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
-    text::{Line, Span},
-    widgets::{Block, Borders, List, ListItem, ListState},
+    text::{Line, Span, Text},
+    widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Wrap, Padding},
     Terminal,
 };
 use crossterm::{
@@ -17,11 +17,9 @@ use std::{
     time::Duration,
 };
 
-use tui_markdown::{from_str};
+use crate::ui::{update_filtered, AppState};
 
-use crate::ui::{AppState,update_filtered};
-
-
+use crate::utils::parse_html::parse_html_to_lines;
 
 
 pub fn run_ui(mut app: AppState) -> Result<(), Box<dyn Error>> {
@@ -33,15 +31,25 @@ pub fn run_ui(mut app: AppState) -> Result<(), Box<dyn Error>> {
     let mut terminal = Terminal::new(backend)?;
 
     update_filtered(&mut app);
-    let mut list_state = ListState::default();
+    let mut list_state: ListState = ListState::default();
     list_state.select(Some(app.selected_index));
 
     let result = loop {
         terminal.draw(|f| {
-            let chunks = Layout::default()
+
+            let zuko_screen = Layout::default()
                 .direction(Direction::Horizontal)
                 .constraints([Constraint::Percentage(40), Constraint::Percentage(60)])
                 .split(f.area());
+
+
+            let questions_pannel = Layout::default()
+                .direction(Direction::Vertical)
+                .constraints([
+                    Constraint::Min(3),       // Question list
+                    Constraint::Length(3),    // Search input box
+                ])
+                .split(zuko_screen[0]);
 
             // Left: Search list
             let items: Vec<ListItem> = app
@@ -61,27 +69,45 @@ pub fn run_ui(mut app: AppState) -> Result<(), Box<dyn Error>> {
                 .highlight_symbol(">> ")
                 .highlight_style(Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD));
 
-            f.render_stateful_widget(list, chunks[0], &mut list_state);
+            // f.render_stateful_widget(list, chunks[0], &mut list_state);
+            f.render_stateful_widget(list, questions_pannel[0], &mut list_state);
+
+
+            // -- Search input (bottom left)
+            let input = Paragraph::new(Text::from(app.query.clone()))
+                .style(Style::default().fg(Color::Green))
+                .block(Block::default().borders(Borders::ALL).title("Search"));
+
+            f.render_widget(input, questions_pannel[1]);
+
 
             // Right: Markdown preview
-            let preview = app
+            let question_content = app
                 .filtered_question_indices
                 .get(app.selected_index)
                 .and_then(|&idx| app.all_questions.get(idx))
                 .map(|q| q.content.clone())
                 .unwrap_or_default();
 
-            let content_text = from_str(&preview);
-            f.render_widget(content_text, chunks[1]);
+
+            let lines = parse_html_to_lines(&question_content);
+            let paragraph = Paragraph::new(lines.to_vec())
+                .block(
+                    Block::default()
+                        .title("Question Preview")
+                        .borders(Borders::ALL)
+                        // Add padding inside the block
+                        .padding(Padding::uniform(1)),
+                )
+                .wrap(Wrap { trim: true });
+
+            f.render_widget(paragraph, zuko_screen[1]);
         })?;
 
         if event::poll(Duration::from_millis(100))? {
             if let CEvent::Key(key) = event::read()? {
                 match key.code {
                     KeyCode::Char(c) => {
-                        if c == 'q'{
-                            break Ok(());
-                        }
                         app.query.push(c);
                         update_filtered(&mut app);
                         list_state.select(Some(app.selected_index));
@@ -112,8 +138,10 @@ pub fn run_ui(mut app: AppState) -> Result<(), Box<dyn Error>> {
                     }
                     KeyCode::PageUp => {
                         app.scroll = app.scroll.saturating_sub(5);
+                    } 
+                    KeyCode::Esc => {
+                        break Ok(());
                     }
-                    // KeyCode::Char('q') => break Ok(()),
                     _ => {}
                 }
             }
