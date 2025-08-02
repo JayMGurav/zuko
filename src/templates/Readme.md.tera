@@ -1,0 +1,46 @@
+# {{ title }}
+
+---
+
+## 📝 Problem Description
+
+{{ content | safe }}
+
+---
+
+## 💡 Instructions
+
+- Read the problem carefully.
+- Use the `content` above as the detailed problem statement.
+- Ensure your solution is efficient and passes all edge cases.
+
+<!-- Uncomment and expand these sections as needed -->
+
+{# 
+## 🧩 Difficulty
+
+{{ difficulty }}
+
+## 📚 Topics
+
+{% if topic is defined %}
+- {% for t in topic %}
+  - {{ t }}
+  {% endfor %}
+{% endif %}
+
+## 💭 Hints
+
+{% if hints is defined %}
+- {% for hint in hints %}
+  - {{ hint }}
+  {% endfor %}
+{% endif %}
+
+## 🧪 Example Testcases
+
+{% if example_testcase_list is defined %}
+```txt
+{% for testcase in example_testcase_list %}
+{{ testcase }}
+{% endfor %}

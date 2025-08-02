@@ -1,6 +1,7 @@
 use crate::config::zuko_context::{ZukoContext};
 use crate::db::get_zuko_db;
 use crate::types::{Question};
+use libsql::{de};
 
 pub async fn get_all_questions(
     _context: &ZukoContext,
@@ -9,10 +10,10 @@ pub async fn get_all_questions(
 )  -> Result<Vec<Question>, Box<dyn std::error::Error>>  {
     // Fetch questions from the database
     let db = get_zuko_db();
+    
+        // let mut query = "SELECT title,title_slug,content FROM QuestionList".to_string();
 
-    // let mut query = "SELECT title,title_slug,topic,difficulty,content,hints,example_testcase_list,next_challenges FROM QuestionList".to_string();
-
-    let mut query = "SELECT title,title_slug,content FROM QuestionList".to_string();
+    let mut query = "SELECT title, title_slug, content, difficulty, topic, hints, example_testcase_list, similar_question_list, next_challenges FROM QuestionList".to_string();
 
     let mut conditions = vec![];
 
@@ -38,7 +39,8 @@ pub async fn get_all_questions(
             match rows.next().await? {
                 Some(row) => {
                     // println!("Row values: {:?}", row);
-                    let question = Question::from_row(row)?;
+                    // let question = Question::from_row(row)?;
+                    let question: Question = de::from_row(&row)?;
                     questions.push(question);
                 }
                 None => break,

@@ -1,0 +1,8 @@
+// {{ question.title }}
+// Difficulty: {{ difficulty }}
+
+function solve() {
+    // TODO: implement solution
+}
+
+solve();

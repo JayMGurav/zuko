@@ -1,6 +1,7 @@
 pub mod fuzzy_matcher;
 pub mod parse_html;
-
+pub mod bootstrap_solution;
+pub mod serde_json_string;
 
 
 // pub fn parse_optional_json<T: serde::de::DeserializeOwned>(

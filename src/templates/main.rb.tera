@@ -1,0 +1,8 @@
+# {{ question.title }}
+# Difficulty: {{ difficulty }}
+
+def solve
+  # TODO: implement solution
+end
+
+solve

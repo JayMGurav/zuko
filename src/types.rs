@@ -1,31 +1,44 @@
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use crate::utils::serde_json_string;
 
 #[derive(Debug, Serialize, Deserialize)]
+// #[serde(rename_all = "camelCase")]
 pub struct SimilarQuestion {
     pub title: String,
-    pub title_slug: String, // or `titleSlug` if you're using Serde rename
+    pub titleSlug: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+// #[serde(rename_all = "camelCase")]
 pub struct Topic {
     pub name: String,
-    pub slug: String, // or `titleSlug` if you're using Serde rename
+    pub slug: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+// #[serde(rename_all = "camelCase")]
 pub struct Question {
     pub title: String,
     pub title_slug: String,
-    // pub difficulty: Difficulty,
     pub content: String,
+    pub difficulty: Option<String>,
 
-    // pub topic: Option<Vec<Topic>>,
-    // pub hints: Option<Vec<String>>,
-    // pub example_testcase_list: Option<Vec<String>>,
-    // pub similar_question_list: Option<Vec<SimilarQuestion>>,
-    // pub next_challenges: Option<Vec<String>>,
+    #[serde(deserialize_with = "serde_json_string::deserialize")]
+    pub topic: Option<Vec<Topic>>,
+    
+    #[serde(deserialize_with = "serde_json_string::deserialize")]
+    pub hints: Option<Vec<String>>,
+
+    #[serde(deserialize_with = "serde_json_string::deserialize")]
+    pub example_testcase_list: Option<Vec<String>>,
+
+    #[serde(deserialize_with = "serde_json_string::deserialize")]
+    pub similar_question_list: Option<Vec<SimilarQuestion>>,
+    
+    #[serde(deserialize_with = "serde_json_string::deserialize")]
+    pub next_challenges: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, ValueEnum)]
@@ -44,20 +57,21 @@ pub enum DifficultyFilter {
 // ---- implementations ----
 
 impl Question {
-    pub fn from_row(row: libsql::Row) -> Result<Self, Box<dyn std::error::Error>> {
-    Ok(Question {
-        title: row.get(0)?,
-        title_slug: row.get(1)?,
-        content: row.get(2)?,
-        // difficulty: serde_json::from_str(&row.get::<String>(3)?)?, 
+    // pub fn from_row(row: libsql::Row) -> Result<Self, Box<dyn std::error::Error>> {
+    // Ok(Question {
+    //     title: row.get(0)?,
+    //     title_slug: row.get(1)?,
+    //     content: row.get(2)?,
+
+    //     // difficulty: serde_json::from_str(&row.get::<String>(3)?)?, 
         
-        // topic: parse_optional_json(row.get::<Option<String>>(2)?)?,
-        // hints: parse_optional_json(row.get::<Option<String>>(5)?)?,
-        // example_testcase_list: parse_optional_json(row.get::<Option<String>>(6)?)?,
-        // similar_question_list: parse_optional_json(row.get::<Option<String>>(7)?)?,
-        // next_challenges: parse_optional_json(row.get::<Option<String>>(8)?)?,
-    })
-}
+    //     // topic: parse_optional_json(row.get::<Option<String>>(2)?)?,
+    //     // hints: parse_optional_json(row.get::<Option<String>>(5)?)?,
+    //     // example_testcase_list: parse_optional_json(row.get::<Option<String>>(6)?)?,
+    //     // similar_question_list: parse_optional_json(row.get::<Option<String>>(7)?)?,
+    //     // next_challenges: parse_optional_json(row.get::<Option<String>>(8)?)?,
+    // })
+// }
 }
 
 impl fmt::Display for Difficulty {

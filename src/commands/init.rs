@@ -59,6 +59,7 @@ pub async fn execute(context: &mut ZukoContext) {
     context.difficulty = difficulty_mode;
     context.project_root = std::env::current_dir().expect("Failed to get current directory");
 
+    
     context.save_to_file().expect("Failed to save config to file");
 
 
