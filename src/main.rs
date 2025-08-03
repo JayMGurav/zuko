@@ -31,7 +31,7 @@ enum Commands {
     /// List questions optionally filtered by topic, difficulty, or solved status
     List {
         #[arg(long)]
-        topic: Option<String>,
+        topic_slug: Option<String>,
 
         #[arg(long)]
         difficulty: Option<String>,
@@ -79,12 +79,12 @@ async fn main() {
             commands::init::execute(&mut context).await;
         }
         Commands::List {
-            topic,
+            topic_slug,
             difficulty,
             solved,
         } => {
             // Handle the list command
-            commands::list::execute(&context, topic.clone(), difficulty.clone(), *solved).await;
+            commands::list::execute(&context, topic_slug.clone(), difficulty.clone(), *solved).await;
         }
         Commands::Sync => {
             // Handle the sync command

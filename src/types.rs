@@ -54,25 +54,50 @@ pub enum DifficultyFilter {
     All,
 }
 
+pub enum CurrentScreen {
+    QuestionList,
+    TopicList,
+    DifficultyFilter,
+}
+
+pub struct AppState {
+    pub all_questions: Vec<Question>,
+    pub all_topics: Vec<Topic>,
+    pub difficulties: Vec<DifficultyFilter>,
+    pub filtered_topic_indices: Vec<usize>,
+    pub selected_topic_index: usize,
+    pub selected_topic: Option<Topic>,
+    pub selected_difficulty: DifficultyFilter,
+    pub filtered_question_indices: Vec<usize>,
+    pub query: String,
+    pub topic_query: String,
+    pub selected_index: usize,
+    pub scroll: u16,
+    pub current_screen: CurrentScreen,
+}
+
+impl AppState {
+    pub fn new(questions: Vec<Question>, topics: Vec<Topic>) -> Self {
+        AppState {
+            all_questions: questions,
+            filtered_question_indices: Vec::new(),
+            all_topics:topics,
+            filtered_topic_indices:Vec::new(),
+            difficulties: DifficultyFilter::all_difficulties(),
+            selected_difficulty: DifficultyFilter::default(),
+            query: String::new(),
+            topic_query: String::new(),
+            selected_index: 0,
+            selected_topic_index: 0,
+            selected_topic: None,
+            scroll: 0,
+            current_screen: CurrentScreen::QuestionList,
+        }
+    }
+}
+
 // ---- implementations ----
 
-impl Question {
-    // pub fn from_row(row: libsql::Row) -> Result<Self, Box<dyn std::error::Error>> {
-    // Ok(Question {
-    //     title: row.get(0)?,
-    //     title_slug: row.get(1)?,
-    //     content: row.get(2)?,
-
-    //     // difficulty: serde_json::from_str(&row.get::<String>(3)?)?, 
-        
-    //     // topic: parse_optional_json(row.get::<Option<String>>(2)?)?,
-    //     // hints: parse_optional_json(row.get::<Option<String>>(5)?)?,
-    //     // example_testcase_list: parse_optional_json(row.get::<Option<String>>(6)?)?,
-    //     // similar_question_list: parse_optional_json(row.get::<Option<String>>(7)?)?,
-    //     // next_challenges: parse_optional_json(row.get::<Option<String>>(8)?)?,
-    // })
-// }
-}
 
 impl fmt::Display for Difficulty {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -97,6 +122,14 @@ impl fmt::Display for DifficultyFilter {
 impl DifficultyFilter {
     pub fn default() -> Self {
         DifficultyFilter::All
+    }
+    pub fn all_difficulties() -> Vec<DifficultyFilter> {
+        vec![
+            DifficultyFilter::All,
+            DifficultyFilter::Specific(Difficulty::Easy),
+            DifficultyFilter::Specific(Difficulty::Medium),
+            DifficultyFilter::Specific(Difficulty::Hard),
+        ]
     }
 }
 

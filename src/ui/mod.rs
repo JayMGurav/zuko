@@ -1,18 +1,41 @@
 pub mod list;
-use crate::types::Question;
-use crate::utils::fuzzy_matcher::search_questions;
 
-pub struct AppState {
-    pub all_questions: Vec<Question>,
-    pub filtered_question_indices: Vec<usize>,
-    pub query: String,
-    pub selected_index: usize,
-    pub scroll: u16,
-}
+use ratatui::{
+    backend::CrosstermBackend,
+    Terminal,
+};
+use crossterm::{
+    event::{EnableMouseCapture, DisableMouseCapture},
+    execute,
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+};
+use std::{
+    error::Error,
+    io::{stdout},
+};
+use crate::types::{AppState};
 
-pub fn update_filtered(app: &mut AppState) {
-    app.filtered_question_indices = search_questions(&app.all_questions, &app.query);
-    if app.selected_index >= app.filtered_question_indices.len() {
-        app.selected_index = 0;
-    }
+
+pub fn run_ui(mut app_state:  &mut AppState) ->  Result<(), Box<dyn Error>> {
+     // setup terminal
+    enable_raw_mode()?;
+    
+    let mut stdout = stdout();
+    execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
+
+    let backend = CrosstermBackend::new(stdout);
+    let mut terminal = Terminal::new(backend)?;
+
+    let res = list::run_list_ui(&mut terminal, &mut app_state);
+
+    // Cleanup terminal
+    disable_raw_mode()?;
+    execute!(
+        terminal.backend_mut(),
+        LeaveAlternateScreen,
+        DisableMouseCapture
+    )?;
+    terminal.show_cursor()?;
+
+    Ok(())
 }

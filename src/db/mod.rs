@@ -1,6 +1,6 @@
 pub mod zuko_cli;
 pub mod zuko_user;
-pub mod list;
+// pub mod list;
 
 use libsql::{Connection, Database};
 use tokio::sync::OnceCell;
