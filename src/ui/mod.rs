@@ -2,6 +2,10 @@ pub mod list;
 
 use ratatui::{
     backend::CrosstermBackend,
+    layout::{Constraint, Direction, Layout},
+    style::{Color, Modifier, Style},
+    text::{Line, Span, Text},
+    widgets::{Block, Borders, List, ListItem, ListState, Paragraph, Wrap, Padding},
     Terminal,
 };
 use crossterm::{
@@ -16,7 +20,7 @@ use std::{
 use crate::types::{AppState};
 
 
-pub fn run_ui(mut app_state:  &mut AppState) ->  Result<(), Box<dyn Error>> {
+pub async fn run_ui(mut app_state:  &mut AppState) ->  Result<(), Box<dyn Error>> {
      // setup terminal
     enable_raw_mode()?;
     
@@ -26,7 +30,7 @@ pub fn run_ui(mut app_state:  &mut AppState) ->  Result<(), Box<dyn Error>> {
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
-    let res = list::run_list_ui(&mut terminal, &mut app_state);
+    let res = list::run_list_ui(&mut terminal, &mut app_state).await;
 
     // Cleanup terminal
     disable_raw_mode()?;

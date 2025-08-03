@@ -10,15 +10,13 @@ pub struct SimilarQuestion {
     pub titleSlug: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-// #[serde(rename_all = "camelCase")]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Topic {
     pub name: String,
     pub slug: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-// #[serde(rename_all = "camelCase")]
 pub struct Question {
     pub title: String,
     pub title_slug: String,

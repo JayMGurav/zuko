@@ -27,7 +27,7 @@ use crate::config::ui::{
     BACKGROUND_COLOR, POPUP_BACKGROUND_COLOR, BORDER_COLOR, HIGHLIGHT_COLOR, TEXT_COLOR,POPUP_BORDER_COLOR, TITLE_TEXT_COLOR, BLOCK_PADDING, HIGHLIGHT_SYMBOL
 };
 
-pub fn run_list_ui<B: Backend>(
+pub async fn run_list_ui<B: Backend>(
     terminal: &mut Terminal<B>,
     app: &mut AppState,
 ) -> Result<(), Box<dyn std::error::Error>> {
@@ -294,6 +294,20 @@ pub fn run_list_ui<B: Backend>(
                                 app.scroll = 0;
                             }
                         }
+                        (KeyCode::Enter, KeyModifiers::NONE) => {
+                            if let Some(selected_topic) = app
+                                .filtered_topic_indices
+                                .get(app.selected_topic_index)
+                                .and_then(|&idx| app.all_topics.get(idx).cloned())
+                            {
+                                app.selected_topic = Some(selected_topic);
+                                filter_questions_by_topic_and_difficulty(app).await;
+                                app.topic_query.clear();
+                                update_topic_list(app);
+                                update_question_list(app);
+                            }
+                            app.current_screen = CurrentScreen::QuestionList;
+                        }
                         (KeyCode::Esc, KeyModifiers::NONE) => {
                             app.topic_query.clear();
                             update_topic_list(app);
@@ -328,7 +342,7 @@ pub fn update_topic_list(app: &mut AppState) {
     }
 }
 
-pub async fn filter_questions_by_topic_and_difficulty(app: &mut AppState) {
+pub async fn filter_questions_by_topic_and_difficulty(app: &mut AppState)  {
     let selected_topic_slug = app
         .selected_topic
         .as_ref()

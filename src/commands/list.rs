@@ -41,7 +41,7 @@ pub async fn execute(
 
     let mut app_state = AppState::new(questions, topics);
 
-    if let Err(e) = run_ui(&mut app_state) {
+   if let Err(e) = run_ui(&mut app_state).await {
         eprintln!("Failed to run UI: {}", e);
     }
 }
