@@ -8,6 +8,7 @@ pub async fn get_all_questions(
     topic_slug: Option<String>,
     difficulty: Option<String>,
 )  -> Result<Vec<Question>, Box<dyn std::error::Error>>  {
+
     // Fetch questions from the database
     let db = get_zuko_db();
     
@@ -18,17 +19,20 @@ pub async fn get_all_questions(
     let mut conditions = vec![];
 
     if let Some(ref topic_slug) = topic_slug {
-        conditions.push(format!(
-            "EXISTS (SELECT 1 FROM json_each(QuestionList.topic) WHERE json_each.value ->> '$.slug' = '{}')",
-            topic_slug
-        ));
+        if !topic_slug.is_empty() {
+            conditions.push(format!(
+                "EXISTS (SELECT 1 FROM json_each(QuestionList.topic) WHERE json_each.value ->> '$.slug' = '{}')",
+                topic_slug
+            ));
+        }
     }
 
 
     if let Some(ref d) = difficulty {
-        conditions.push(format!("difficulty = '{}'", d));
+        if d != "ALL" {
+            conditions.push(format!("difficulty = '{}'", d));
+        }
     }
-    //TODO: Add solved status filter if needed
     
     if !conditions.is_empty() {
         query.push_str(" WHERE ");
@@ -57,23 +61,23 @@ pub async fn get_all_questions(
 
 }
 
-pub async fn get_question(title_slug: String) -> Result<Question, Box<dyn std::error::Error>> {
-    let db = get_zuko_db();
+// pub async fn get_question(title_slug: String) -> Result<Question, Box<dyn std::error::Error>> {
+//     let db = get_zuko_db();
 
-    let mut stmt = db.prepare("SELECT * FROM QuestionList WHERE title_slug = $1").await.unwrap();
+//     let mut stmt = db.prepare("SELECT * FROM QuestionList WHERE title_slug = $1").await.unwrap();
 
 
-    let row = stmt.query([title_slug]) .await
-        .unwrap()
-        .next()
-        .await
-        .unwrap()
-        .unwrap();
+//     let row = stmt.query([title_slug]) .await
+//         .unwrap()
+//         .next()
+//         .await
+//         .unwrap()
+//         .unwrap();
 
-    let question = de::from_row::<Question>(&row).unwrap();
+//     let question = de::from_row::<Question>(&row).unwrap();
 
-    Ok(question)
-}
+//     Ok(question)
+// }
 
 
 pub async fn get_all_topics() -> Result<Vec<Topic>, Box<dyn std::error::Error>> {

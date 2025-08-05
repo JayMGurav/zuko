@@ -61,17 +61,18 @@ pub enum CurrentScreen {
 pub struct AppState {
     pub all_questions: Vec<Question>,
     pub all_topics: Vec<Topic>,
-    pub difficulties: Vec<DifficultyFilter>,
     pub filtered_topic_indices: Vec<usize>,
     pub selected_topic_index: usize,
     pub selected_topic: Option<Topic>,
-    pub selected_difficulty: DifficultyFilter,
     pub filtered_question_indices: Vec<usize>,
     pub query: String,
     pub topic_query: String,
     pub selected_index: usize,
     pub scroll: u16,
     pub current_screen: CurrentScreen,
+    pub difficulties: Vec<DifficultyFilter>,
+    pub selected_difficulty: DifficultyFilter,
+    pub selected_difficulty_index: usize,
 }
 
 impl AppState {
@@ -83,6 +84,7 @@ impl AppState {
             filtered_topic_indices:Vec::new(),
             difficulties: DifficultyFilter::all_difficulties(),
             selected_difficulty: DifficultyFilter::default(),
+            selected_difficulty_index: 0,
             query: String::new(),
             topic_query: String::new(),
             selected_index: 0,
@@ -118,6 +120,16 @@ impl fmt::Display for DifficultyFilter {
 }
 
 impl DifficultyFilter {
+    pub fn to_str(&self) -> &'static str {
+        match self {
+            DifficultyFilter::All => "All",
+            DifficultyFilter::Specific(difficulty) => match difficulty {
+                Difficulty::Easy => "Easy",
+                Difficulty::Medium => "Medium",
+                Difficulty::Hard => "Hard",
+            },
+        }
+    }
     pub fn default() -> Self {
         DifficultyFilter::All
     }

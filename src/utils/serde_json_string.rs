@@ -1,4 +1,4 @@
-use serde::{self, de::Error, de::DeserializeOwned, Deserializer, Deserialize, Serialize};
+use serde::{self, de::Error, de::DeserializeOwned, Deserializer, Deserialize};
 use serde_json;
 
     // This generic function can deserialize any type T from a JSON string
