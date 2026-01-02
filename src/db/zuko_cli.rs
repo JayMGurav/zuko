@@ -61,23 +61,23 @@ pub async fn get_all_questions(
 
 }
 
-// pub async fn get_question(title_slug: String) -> Result<Question, Box<dyn std::error::Error>> {
-//     let db = get_zuko_db();
+pub async fn get_question(title_slug: String) -> Result<Question, Box<dyn std::error::Error>> {
+    let db = get_zuko_db();
 
-//     let mut stmt = db.prepare("SELECT * FROM QuestionList WHERE title_slug = $1").await.unwrap();
+    let mut stmt = db.prepare("SELECT * FROM QuestionList WHERE title_slug = $1").await.unwrap();
 
 
-//     let row = stmt.query([title_slug]) .await
-//         .unwrap()
-//         .next()
-//         .await
-//         .unwrap()
-//         .unwrap();
+    let row = stmt.query([title_slug]) .await
+        .unwrap()
+        .next()
+        .await
+        .unwrap()
+        .unwrap();
 
-//     let question = de::from_row::<Question>(&row).unwrap();
+    let question = de::from_row::<Question>(&row).unwrap();
 
-//     Ok(question)
-// }
+    Ok(question)
+}
 
 
 pub async fn get_all_topics() -> Result<Vec<Topic>, Box<dyn std::error::Error>> {
