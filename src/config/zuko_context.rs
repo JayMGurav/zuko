@@ -1,6 +1,6 @@
 use crate::types::DifficultyFilter;
 use serde::{Deserialize, Serialize};
-use std::path::{PathBuf};
+use std::path::{Path, PathBuf};
 use derive_builder::Builder;
 use dirs::home_dir; 
 use std::fs;
@@ -80,7 +80,7 @@ impl ZukoContext {
         Ok(())
     }
 
-    fn load_context_from_file(cli_dir: &PathBuf) -> Option<ZukoContext> {
+    fn load_context_from_file(cli_dir: &Path) -> Option<ZukoContext> {
         let config_path = cli_dir.join("config.toml");
         let toml_str = fs::read_to_string(config_path).ok()?;
         toml::from_str(&toml_str).ok()
@@ -96,7 +96,7 @@ impl ZukoContext {
         }
 
 
-        if let Some(ctx) = Self::load_context_from_file(&cli_dir.join("config.toml")) {
+        if let Some(ctx) = Self::load_context_from_file(&cli_dir) {
             return ctx;
         }
 

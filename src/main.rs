@@ -9,8 +9,9 @@ use clap::{Parser, Subcommand};
 use db::{ZUKO_DB, ZUKO_DATABASE};
 use libsql::Builder;
 use config::db::{TURSO_DB_URL, TURSO_DB_TOKEN};
+use std::fs::create_dir_all;
 
-use crate::config::zuko_context::{ZukoContext};
+use crate::config::zuko_context::ZukoContext;
 
 #[derive(Parser)]
 #[command(name = "zuko")]
@@ -50,10 +51,14 @@ async fn main() {
 
     let mut context = ZukoContext::load_or_default();
 
-    // print context value to console
-    // { project_root: "", project_name: "", cli_dir: "/Users/jaygurav/.zuko", preferred_language_list: ["java", "python", "rust", "javascript", "c++", "ruby", "go"], editor_cmd: "code", difficulty: All, init_git: true, track_progress: false, username: "" }
+    // Ensure the db/ subdirectory inside .zuko exists before opening the database
+    let db_dir = context.cli_dir.join("db");
+    if !db_dir.exists() {
+        create_dir_all(&db_dir)
+            .unwrap_or_else(|e| panic!("Failed to create directory {}: {}", db_dir.display(), e));
+    }
 
-    // initialize zuko db
+    // initialize zuko db (creates local replica if missing, syncs if it already exists)
     let zuko_db = Builder::new_remote_replica(
         format!("{}", context.cli_dir.join("db/zuko.db").display()).to_string(),
         TURSO_DB_URL.to_string(), //remote DB connection string

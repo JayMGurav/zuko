@@ -30,16 +30,12 @@ pub fn parse_html_to_lines(html: &str) -> Vec<Line<'static>> {
                     walk_and_append_to_lines(&element.children, Style::default(), &mut pre_lines);
 
                     // The html-parser might introduce a leading newline from formatting.
-                    if let Some(first_line) = pre_lines.get(0) {
-                        if first_line.spans.iter().all(|s| s.content.trim().is_empty()) {
-                            pre_lines.remove(0);
-                        }
+                    if pre_lines.first().is_some_and(|l| l.spans.iter().all(|s| s.content.trim().is_empty())) {
+                        pre_lines.remove(0);
                     }
                     // Also remove trailing empty line if it only contains whitespace
-                    if let Some(last_line) = pre_lines.last() {
-                        if last_line.spans.iter().all(|s| s.content.trim().is_empty()) {
-                            pre_lines.pop();
-                        }
+                    if pre_lines.last().is_some_and(|l| l.spans.iter().all(|s| s.content.trim().is_empty())) {
+                        pre_lines.pop();
                     }
                     lines.extend(pre_lines);
                     // Add a blank line for spacing after the pre block
@@ -47,17 +43,17 @@ pub fn parse_html_to_lines(html: &str) -> Vec<Line<'static>> {
                 }
                 "ul" => {
                     for child in &element.children {
-                        if let Node::Element(li_element) = child {
-                            if li_element.name == "li" {
-                                let mut item_spans =
-                                    vec![Span::styled("• ", Style::default().fg(Color::Cyan))];
-                                walk_nodes_to_spans(
-                                    &li_element.children,
-                                    Style::default(),
-                                    &mut item_spans,
-                                );
-                                lines.push(Line::from(item_spans));
-                            }
+                        if let Node::Element(li_element) = child
+                            && li_element.name == "li"
+                        {
+                            let mut item_spans =
+                                vec![Span::styled("• ", Style::default().fg(Color::Cyan))];
+                            walk_nodes_to_spans(
+                                &li_element.children,
+                                Style::default(),
+                                &mut item_spans,
+                            );
+                            lines.push(Line::from(item_spans));
                         }
                     }
                     // Add a blank line for spacing after the list
@@ -75,10 +71,8 @@ pub fn parse_html_to_lines(html: &str) -> Vec<Line<'static>> {
     }
 
     // Remove the very last blank line if it exists, to avoid trailing space
-    if let Some(last_line) = lines.last() {
-        if last_line.spans.is_empty() {
-            lines.pop();
-        }
+    if lines.last().is_some_and(|l| l.spans.is_empty()) {
+        lines.pop();
     }
 
     lines
@@ -100,7 +94,7 @@ fn walk_nodes_to_spans(nodes: &[Node], current_style: Style, spans: &mut Vec<Spa
                     "em" | "i" => current_style.add_modifier(Modifier::ITALIC),
                     "code" => current_style.fg(Color::LightYellow).bg(Color::DarkGray),
                     "sup" => {
-                        if let Some(Node::Text(text)) = element.children.get(0) {
+                        if let Some(Node::Text(text)) = element.children.first() {
                             let sup_text = text
                                 .chars()
                                 .map(|c| match c {
@@ -145,14 +139,12 @@ fn walk_and_append_to_lines(nodes: &[Node], style: Style, lines: &mut Vec<Line<'
                 let mut content_lines = decoded_text.split('\n');
 
                 // Handle the first part of the text, which belongs to the current line.
-                if let Some(first_line_part) = content_lines.next() {
-                    if !first_line_part.is_empty() {
-                        lines
-                            .last_mut()
-                            .unwrap()
-                            .spans
-                            .push(Span::styled(first_line_part.to_string(), style));
-                    }
+                if let Some(first_line_part) = content_lines.next().filter(|s| !s.is_empty()) {
+                    lines
+                        .last_mut()
+                        .unwrap()
+                        .spans
+                        .push(Span::styled(first_line_part.to_string(), style));
                 }
                 // Handle subsequent parts, each starting a new line.
                 for remaining_line_part in content_lines {
@@ -181,11 +173,11 @@ fn is_blank_paragraph(p_element: &html_parser::Element) -> bool {
     if p_element.children.is_empty() {
         return true;
     }
-    if p_element.children.len() == 1 {
-        if let Some(Node::Text(text)) = p_element.children.get(0) {
-            // The parser converts &nbsp; to a non-breaking space character \u{a0}
-            return text.trim() == "\u{a0}" || text.trim().is_empty();
-        }
+    if p_element.children.len() == 1
+        && let Some(Node::Text(text)) = p_element.children.first()
+    {
+        // The parser converts &nbsp; to a non-breaking space character \u{a0}
+        return text.trim() == "\u{a0}" || text.trim().is_empty();
     }
     false
 }
