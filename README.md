@@ -4,6 +4,12 @@
 
 **Zuko** is a blazing-fast, terminal-first CLI tool to supercharge your Data Structures and Algorithms (DSA) practice.
 
+## 🎬 Demo
+
+Click on Zuko to play.
+
+[![Watch the Demo](https://jaygurav.com/zuko-style.png)](https://jaygurav.com/zuko-demo.mp4)
+
 ### 🎯 Our Goal
 
 Make the **developer terminal** the first and only stop for solving, exploring, and practicing questions — even offline — and use **version control** to track your progress over time.
