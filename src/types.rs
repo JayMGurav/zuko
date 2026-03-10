@@ -7,7 +7,8 @@ use crate::utils::serde_json_string;
 // #[serde(rename_all = "camelCase")]
 pub struct SimilarQuestion {
     pub title: String,
-    pub titleSlug: String,
+    #[serde(rename = "titleSlug")]
+    pub title_slug: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -120,7 +121,7 @@ impl fmt::Display for DifficultyFilter {
 }
 
 impl DifficultyFilter {
-    pub fn to_str(&self) -> &'static str {
+    pub fn to_str(self) -> &'static str {
         match self {
             DifficultyFilter::All => "All",
             DifficultyFilter::Specific(difficulty) => match difficulty {

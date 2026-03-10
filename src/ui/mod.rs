@@ -16,7 +16,7 @@ use std::{
 use crate::types::{AppState};
 
 
-pub async fn run_ui(mut app_state:  &mut AppState) ->  Result<(), Box<dyn Error>> {
+pub async fn run_ui(app_state: &mut AppState) ->  Result<(), Box<dyn Error>> {
      // setup terminal
     enable_raw_mode()?;
     
@@ -26,7 +26,9 @@ pub async fn run_ui(mut app_state:  &mut AppState) ->  Result<(), Box<dyn Error>
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
-    list::run_list_ui(&mut terminal, &mut app_state).await;
+    if let Err(e) = list::run_list_ui(&mut terminal, app_state).await {
+        eprintln!("UI error: {}", e);
+    }
 
     // Cleanup terminal
     disable_raw_mode()?;
