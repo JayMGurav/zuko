@@ -43,17 +43,17 @@ pub fn parse_html_to_lines(html: &str) -> Vec<Line<'static>> {
                 }
                 "ul" => {
                     for child in &element.children {
-                        if let Node::Element(li_element) = child
-                            && li_element.name == "li"
-                        {
-                            let mut item_spans =
-                                vec![Span::styled("• ", Style::default().fg(Color::Cyan))];
-                            walk_nodes_to_spans(
-                                &li_element.children,
-                                Style::default(),
-                                &mut item_spans,
-                            );
-                            lines.push(Line::from(item_spans));
+                        if let Node::Element(li_element) = child {
+                            if li_element.name == "li" {
+                                let mut item_spans =
+                                    vec![Span::styled("• ", Style::default().fg(Color::Cyan))];
+                                walk_nodes_to_spans(
+                                    &li_element.children,
+                                    Style::default(),
+                                    &mut item_spans,
+                                );
+                                lines.push(Line::from(item_spans));
+                            }
                         }
                     }
                     // Add a blank line for spacing after the list
@@ -173,11 +173,11 @@ fn is_blank_paragraph(p_element: &html_parser::Element) -> bool {
     if p_element.children.is_empty() {
         return true;
     }
-    if p_element.children.len() == 1
-        && let Some(Node::Text(text)) = p_element.children.first()
-    {
-        // The parser converts &nbsp; to a non-breaking space character \u{a0}
-        return text.trim() == "\u{a0}" || text.trim().is_empty();
+    if p_element.children.len() == 1 {
+        if let Some(Node::Text(text)) = p_element.children.first() {
+            // The parser converts &nbsp; to a non-breaking space character \u{a0}
+            return text.trim() == "\u{a0}" || text.trim().is_empty();
+        }
     }
     false
 }

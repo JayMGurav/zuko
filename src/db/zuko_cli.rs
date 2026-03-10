@@ -12,12 +12,12 @@ fn sanitize_slug(input: &str) -> String {
 }
 
 /// Validates that a difficulty string is one of the known safe values (case-insensitive).
-/// Returns the canonical DB representation (e.g. "Easy") or `None` if unrecognised.
+/// Returns the canonical DB representation (e.g. "EASY") or `None` if unrecognised.
 fn validate_difficulty(input: &str) -> Option<&'static str> {
     match input.to_lowercase().as_str() {
-        "easy" => Some("Easy"),
-        "medium" => Some("Medium"),
-        "hard" => Some("Hard"),
+        "easy" => Some("EASY"),
+        "medium" => Some("MEDIUM"),
+        "hard" => Some("HARD"),
         _ => None,
     }
 }
